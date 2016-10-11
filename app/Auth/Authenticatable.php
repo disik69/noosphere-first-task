@@ -1,13 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: disik
- * Date: 10/11/16
- * Time: 8:41 AM
- */
 
 namespace App\Auth;
-
 
 trait Authenticatable
 {
