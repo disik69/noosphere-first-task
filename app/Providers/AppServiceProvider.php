@@ -13,7 +13,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $this->app['validator']->extend('file_model_uniqueness', function ($attribute, $value, $parameters, $validator) {
+            $storage = $this->app['filesystem'];
+
+            list($file, $field) = $parameters;
+
+            if ($storage->exists($file)) {
+                $list = unserialize($storage->get($file));
+
+                $result = ! $list->where($field, $value, false)->first();
+            } else {
+                $result = true;
+            }
+
+            return $result;
+        });
     }
 
     /**

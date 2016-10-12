@@ -53,7 +53,7 @@ class FileModel
 
         if ($conditions) {
             foreach ($conditions as $key => $value) {
-                $list = $list->where($key, $value, true);
+                $list = $list->where($key, $value, false);
             }
         }
 
