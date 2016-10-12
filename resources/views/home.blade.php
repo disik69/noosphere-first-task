@@ -8,7 +8,15 @@
                 <div class="panel-heading">Dashboard</div>
 
                 <div class="panel-body">
-                    You are logged in!
+                    <div class="row">
+                        <div class="col-md-6">
+                            Hello, <b>{{ auth()->user()->name }}!</b>
+                        </div>
+
+                        <div class="col-md-6">
+                            <a class="btn btn-default" href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i>Logout</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
