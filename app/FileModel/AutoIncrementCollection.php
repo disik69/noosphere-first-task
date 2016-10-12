@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Collections;
+namespace App\FileModel;
 
 use Illuminate\Support\Collection;
 

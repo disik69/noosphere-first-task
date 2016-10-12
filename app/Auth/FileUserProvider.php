@@ -2,16 +2,36 @@
 
 namespace App\Auth;
 
+use App\FileModel\FileModel;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Contracts\Hashing\Hasher;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class FileUserProvider implements UserProvider
 {
     protected $model;
 
-    public function __construct($model)
+    /**
+     * @var Hasher
+     */
+    protected $hasher;
+
+    public function __construct(Hasher $hasher, $model)
     {
+        $this->hasher = $hasher;
         $this->model = $model;
+    }
+
+    /**
+     * @return FileModel
+     */
+    public function createModel()
+    {
+        $class = '\\'.ltrim($this->model, '\\');
+
+        return new $class;
     }
 
     /**
@@ -22,7 +42,7 @@ class FileUserProvider implements UserProvider
      */
     public function retrieveById($identifier)
     {
-
+        return $this->createModel()->find($identifier);
     }
 
     /**
@@ -34,7 +54,12 @@ class FileUserProvider implements UserProvider
      */
     public function retrieveByToken($identifier, $token)
     {
+        $model = $this->createModel();
 
+        return $model->get([
+            $model->getAuthIdentifierName() => $identifier,
+            $model->getRememberTokenName() => $token,
+        ])->first();
     }
 
     /**
@@ -46,7 +71,7 @@ class FileUserProvider implements UserProvider
      */
     public function updateRememberToken(Authenticatable $user, $token)
     {
-
+        $user->setRememberToken($token);
     }
 
     /**
@@ -57,7 +82,13 @@ class FileUserProvider implements UserProvider
      */
     public function retrieveByCredentials(array $credentials)
     {
-        
+        foreach ($credentials as $key => $value) {
+            if (Str::contains($key, 'password')) {
+                Arr::forget($credentials, $key);
+            }
+        }
+
+        return $this->createModel()->get($credentials)->first();
     }
 
     /**
@@ -69,6 +100,8 @@ class FileUserProvider implements UserProvider
      */
     public function validateCredentials(Authenticatable $user, array $credentials)
     {
+        $password = $credentials['password'];
 
+        return $this->hasher->check($password, $user->getAuthPassword());
     }
 }

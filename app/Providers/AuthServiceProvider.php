@@ -28,7 +28,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies($gate);
 
         $this->app['auth']->provider('file', function ($app, Array $config) {
-            return new FileUserProvider($config['model']);
+            return new FileUserProvider($app['hash'], $config['model']);
         });
     }
 }
